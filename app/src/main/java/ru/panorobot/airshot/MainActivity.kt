@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_ENABLE_BT:Int = 1
+    private val REQUEST_CODE_DISCOVERBLE_BT:Int = 2
 
     // bluetooth adapter
     lateinit var bAdapter:BluetoothAdapter
@@ -42,33 +43,54 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Включаем bluetooth
+        // TODO Bluetooth включается, но сообщение и иконка неправильные
         turnOnBtn.setOnClickListener {
             if (bAdapter.isEnabled){
                 // Уже включен
-                Toast.makeText(this, "Already on", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Already on", Toast.LENGTH_SHORT).show()
             }
             else{
                 // Включаем
-                var intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 startActivityForResult(intent, REQUEST_CODE_ENABLE_BT)
             }
         }
         // Выключаем bluetooth
         turnOffBtn.setOnClickListener {
+            if (!bAdapter.isEnabled){
+                Toast.makeText(this, "Already off", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                bAdapter.disable()
+                bluetoothIv.setImageResource(R.drawable.ic_bluetooth_off)
+                Toast.makeText(this, "Bluetooth turned off", Toast.LENGTH_SHORT).show()
+            }
 
         }
         // Ищем bluetooth
         discoverableBtn.setOnClickListener {
-
+            if (!bAdapter.isDiscovering){
+                Toast.makeText(this, "Making Your devices discoverable", Toast.LENGTH_SHORT).show()
+                val intent = Intent(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE))
+                startActivityForResult(intent, REQUEST_CODE_DISCOVERBLE_BT)
+            }
         }
-
-
-
-
-
-
-
- // ******************************************       startShooting()
+        // Список сопряженных устроств
+        pairedBtn.setOnClickListener{
+            if (bAdapter.isEnabled){
+                pairedTv.text = "Paired devices"
+                // получаем список сопряженных устройств
+                val devices = bAdapter.bondedDevices
+                for(device in devices){
+                    val deviceName = device.name
+                    val deviceAddress = device
+                    pairedTv.append("\nDevice: $deviceName , $device")
+                }
+            }
+            else{
+                Toast.makeText(this, "Turn on bluetooth first", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -76,10 +98,10 @@ class MainActivity : AppCompatActivity() {
             REQUEST_CODE_ENABLE_BT ->
                 if (requestCode == Activity.RESULT_OK){
                     bluetoothIv.setImageResource(R.drawable.ic_bluetooth_on) // 14:14
-                    Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Bluetooth is on", Toast.LENGTH_SHORT).show()
                 }
             else{
-                    Toast.makeText(this, "Could not on bluetooth", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Could not on bluetooth", Toast.LENGTH_SHORT).show()
                 }
 
         }
