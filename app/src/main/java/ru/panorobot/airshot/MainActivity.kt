@@ -86,6 +86,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Turn on bluetooth first", Toast.LENGTH_SHORT).show()
             }
         }
+
+        shootBtn.setOnClickListener {
+            //TODO Проверить, что bluetooth включен и подключена мишень
+            startShooting()
+
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
