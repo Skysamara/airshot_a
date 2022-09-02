@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Включаем bluetooth
-        // TODO Bluetooth включается, но сообщение и иконка неправильные
         turnOnBtn.setOnClickListener {
             if (bAdapter.isEnabled) {
                 // Уже включен

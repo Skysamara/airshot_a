@@ -13,18 +13,6 @@ class Target(context: Context?) : View(context) {
     private val paint: Paint = Paint()
     private val shots:Shots = Shots()
 
-//    override fun setOnTouchListener(l: OnTouchListener?) {
-////        super.setOnTouchListener(l)
-////        invalidate()
-//    }
-//
-//    override fun setOnClickListener(l: OnClickListener?) {
-////        super.setOnClickListener(l)
-////        invalidate()
-//    }
-
-
-
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         val screenWidth: Int = getWidth()
