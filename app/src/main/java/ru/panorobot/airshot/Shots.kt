@@ -24,14 +24,14 @@ class Shots {
     fun draw(canvas: Canvas?, screenWidth: Int, screenHeight: Int) {
         val paintWite: Paint = Paint()
         paintWite.apply {
-            style = Paint.Style.FILL // стиль Заливка
-            color = Color.WHITE // белая кайма вокруг
+            style = Paint.Style.FILL
+            color = Color.WHITE
         }
-        val paintBlack: Paint = Paint()
 
+        val paintBlack: Paint = Paint()
         paintBlack.apply {
-            style = Paint.Style.FILL // стиль Заливка
-            color = Color.BLACK // белая кайма вокруг
+            style = Paint.Style.FILL
+            color = Color.BLACK
         }
 
         randomizeShots(screenWidth, screenHeight)
@@ -39,7 +39,7 @@ class Shots {
             val x = shot.x
             val y = shot.y
 
-            var radius: Int = (screenWidth + screenHeight) / 100
+            var radius: Int = (screenWidth + screenHeight) / 90
             canvas!!.drawCircle(x.toFloat(), y.toFloat(), radius.toFloat(), paintWite)
 
             radius = (screenWidth + screenHeight) / 120
