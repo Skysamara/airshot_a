@@ -3,6 +3,9 @@ package ru.panorobot.airshot
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,32 +20,38 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_ENABLE_BT: Int = 1
     private val REQUEST_CODE_DISCOVERBLE_BT: Int = 2
 
-    // bluetooth adapter
-    lateinit var bAdapter: BluetoothAdapter
+    lateinit var btAdapter: BluetoothAdapter
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // bluetooth adapter
-        bAdapter = BluetoothAdapter.getDefaultAdapter()
+        init()  // Инициализируем bluetooth adapter
+        checkBluetoothStatus()
+        setListeners()
+        getPairedDevices()
+    }
+
+    private fun checkBluetoothStatus() {
         // check is on/off
-        if (bAdapter == null) {
+        if (btAdapter == null) {
             bluetoothStatusTV.text = "Bluetooht is not available"
         } else {
             bluetoothStatusTV.text = "Bluetooht is available"
         }
         // Статус bluetooth
-        if (bAdapter.isEnabled) {
+        if (btAdapter.isEnabled) {
             bluetoothIv.setImageResource(R.drawable.ic_bluetooth_on)
         } else {
             bluetoothIv.setImageResource(R.drawable.ic_bluetooth_off)
         }
+    }
 
+    @SuppressLint("MissingPermission")
+    private fun MainActivity.setListeners() {
         // Включаем bluetooth
         turnOnBtn.setOnClickListener {
-            if (bAdapter.isEnabled) {
+            if (btAdapter.isEnabled) {
                 // Уже включен
                 Toast.makeText(this, "Already on", Toast.LENGTH_SHORT).show()
             } else {
@@ -53,10 +62,10 @@ class MainActivity : AppCompatActivity() {
         }
         // Выключаем bluetooth
         turnOffBtn.setOnClickListener {
-            if (!bAdapter.isEnabled) {
+            if (!btAdapter.isEnabled) {
                 Toast.makeText(this, "Already off", Toast.LENGTH_SHORT).show()
             } else {
-                bAdapter.disable()
+                btAdapter.disable()
                 bluetoothIv.setImageResource(R.drawable.ic_bluetooth_off)
                 Toast.makeText(this, "Bluetooth turned off", Toast.LENGTH_SHORT).show()
             }
@@ -64,18 +73,28 @@ class MainActivity : AppCompatActivity() {
         }
         // Ищем bluetooth
         discoverableBtn.setOnClickListener {
-            if (!bAdapter.isDiscovering) {
+            if (!btAdapter.isDiscovering) {
                 Toast.makeText(this, "Making Your devices discoverable", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE))
                 startActivityForResult(intent, REQUEST_CODE_DISCOVERBLE_BT)
             }
         }
+        // Переходим на окно мишени
+        shootBtn.setOnClickListener {
+            //TODO Проверить, что bluetooth включен и подключена мишень
+            startShooting()
+
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getPairedDevices() {
         // Список сопряженных устроств
         pairedBtn.setOnClickListener {
-            if (bAdapter.isEnabled) {
+            if (btAdapter.isEnabled) {
                 pairedTv.text = "Paired devices"
                 // получаем список сопряженных устройств
-                val devices = bAdapter.bondedDevices
+                val devices = btAdapter.bondedDevices
                 for (device in devices) {
                     val deviceName = device.name
                     val deviceAddress = device
@@ -85,12 +104,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Turn on bluetooth first", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
-        shootBtn.setOnClickListener {
-            //TODO Проверить, что bluetooth включен и подключена мишень
-            startShooting()
+    private fun init(){
+        val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        btAdapter = btManager.adapter
 
-        }
+    }
+
+    @SuppressLint("MissingPermission")  //TODO Что это?
+    private fun getPaireddevices(){
+        val pairedDevices: Set<BluetoothDevice>? = btAdapter?.bondedDevices
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
